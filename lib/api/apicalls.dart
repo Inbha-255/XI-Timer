@@ -1,6 +1,9 @@
 import 'dart:convert';
+
+
 import 'package:flutter_application_1/Data/Modals/datas.dart';
-import 'package:flutter_application_1/Data/Modals/json.dart';
+
+import '../Data/Modals/json.dart';
 
 
 fetchDataWithoutAPI() {

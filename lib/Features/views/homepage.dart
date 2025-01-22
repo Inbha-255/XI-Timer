@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/colors.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+//import 'package:share_plus/share_plus.dart';
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -216,14 +217,6 @@ class _HomepageState extends State<Homepage> {
                           },
                         ),
                         ListTile(
-                          leading: const Icon(Icons.play_circle_outlined),
-                          title: const Text('Tutorial Videos'),
-                          onTap: () {
-                            Navigator.of(context).pop();
-                            Get.toNamed("/about");
-                          },
-                        ),
-                        ListTile(
                           leading: const Icon(Icons.school_outlined),
                           title: const Text('FAQ'),
                           onTap: () {
@@ -237,6 +230,21 @@ class _HomepageState extends State<Homepage> {
                             Get.toNamed("/aboutpage");
                           },
                         ),
+                         ListTile(
+                          leading: const Icon(Icons.info),
+                          title: const Text('Logout'),
+                          onTap: () {
+                            Get.toNamed("/login");
+                          },
+                        ),
+                        // ListTile(
+                        //   leading: const Icon(Icons.share),
+                        //   title: const Text('Share App'),
+                        //   onTap: () {
+                        //     Navigator.of(context).pop();
+                        //     _shareApp();
+                        //   },
+                        // ),
                       ],
                     ),
                   ),
@@ -254,4 +262,10 @@ class _HomepageState extends State<Homepage> {
       },
     );
   }
-}
+
+  // void _shareApp() {
+  //   // Replace with your app's URL (e.g., from the Play Store or App Store)
+  //   final String appLink = "https://drive.google.com/file/d/16ElUvzi1sDTnlwBlAra26DGaP4a_3ujV/view?usp=drive_link"; 
+  //   Share.share('Check out this app: $appLink');
+  }
+
