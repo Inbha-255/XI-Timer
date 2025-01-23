@@ -20,7 +20,7 @@ List<GetPage> approutes() {
     GetPage(name: '/BasicModeScreen', page: () => BasicModeScreen()),
     GetPage(name: '/Athlete', page: () => SelectAthletePage()),
     GetPage(name: '/history', page: () => Historypage()),
-    GetPage(name: '/faq', page: () => faq()),
-    GetPage(name: '/aboutpage', page: () => aboutpage()),
+    GetPage(name: '/faq', page: () => Faq()),
+    GetPage(name: '/aboutpage', page: () => Aboutpage()),
   ];
 }

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/colors.dart';
 
-class faq extends StatelessWidget {
+class Faq extends StatelessWidget {
   final List<Map<String, String>> faqItems = [
     {
       "question": "What is XI-Timer?",
@@ -18,19 +18,17 @@ class faq extends StatelessWidget {
       "answer":
           "In Basic Mode, the setup is designed to be simple and efficient for personal training. The stopwatch started Manually as the athlete's movement or presence at the start line. As the athlete crosses the designated area, the phone’s camera automatically detects the athlete’s body and records intermediate times, such as lap times, each time the athlete passes the camera's field of view."
     },
-
     {
       "question": "Can i Time Multiple Athlete at Once?",
       "answer":
           "Yes, you can time multiple athletes at once in Basic Mode, as the app's camera can detect multiple athletes crossing the finish line. However, the times recorded will be based on when each athlete is detected individually"
     },
-
     {
       "question": "How does the Detection works?",
       "answer":
           "In Xi-Timer, detection operates at 30 frames per second, utilizing machine learning techniques to ensure real-time performance on most modern smartphones. As an athlete crosses the finish line, the app captures 30 frames per second, calculating the chest position for precise timing. The exact crossing moment is determined using ML-based interpolation between frame times just before and after the crossing. By default, Xi-Timer displays the frame immediately after the finish line for accurate analysis"
     },
-     {
+    {
       "question": "How can i test accuracy of xi-timer?",
       "answer":
           "To test Xi-Timer's accuracy, set up the device at a finish line and use a controlled scenario, such as a known time interval or a secondary stopwatch for comparison. Record the time it detects for an athlete crossing the line and compare it with the manually measured time. Repeat this multiple times to ensure consistency. Testing with various lighting conditions and athlete speeds can also help verify its precision and reliability",
@@ -47,7 +45,7 @@ class faq extends StatelessWidget {
     },
   ];
 
-   faq({super.key});
+  Faq({super.key});
 
   @override
   Widget build(BuildContext context) {

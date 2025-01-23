@@ -12,10 +12,10 @@ class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
   @override
-  _LoginPageState createState() => _LoginPageState();
+  LoginPageState createState() => LoginPageState();
 }
 
-class _LoginPageState extends State<LoginPage> {
+class LoginPageState extends State<LoginPage> {
   final TextEditingController usernameController = TextEditingController();
   final TextEditingController passwordController = TextEditingController();
 
@@ -57,8 +57,8 @@ class _LoginPageState extends State<LoginPage> {
       String password = passwordController.text.trim();
 
       // Parse JSON data
-      final Map<String, dynamic> data = jsonDecode(DataJson);
-      final List<dynamic> dataList = jsonDecode(DataJsonList);
+      final Map<String, dynamic> data = jsonDecode(dataJson);
+      final List<dynamic> dataList = jsonDecode(dataJsonList);
 
       // Combine single object and list for authentication
       final List<Map<String, dynamic>> allUsers = [

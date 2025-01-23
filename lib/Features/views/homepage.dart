@@ -1,7 +1,9 @@
+// ignore_for_file: avoid_print
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/colors.dart';
 import 'package:get/get.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:url_launcher/url_launcher.dart'; // Necessary for launching URLs
 
 class Homepage extends StatefulWidget {
   const Homepage({super.key});
@@ -142,7 +144,53 @@ class _HomepageState extends State<Homepage> {
               shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(50)),
               onPressed: () {
-                print('FAB 1 clicked');
+                // Show the AlertDialog
+                showDialog(
+                  context: context,
+                  builder: (BuildContext context) {
+                    return AlertDialog(
+                      title: Text("Exciting Study Results!"), // Dialog title
+                      content: Text(
+                        "Our study highlights the remarkable accuracy of XI Timer, surpassing traditional light barrier systems. The results show a 95% confidence level with an error margin of less than 15 milliseconds.",
+                      ), // Dialog content
+                      actions: [
+                        TextButton(
+                          onPressed: () {
+                            Navigator.of(context).pop(); // Close the dialog
+                          },
+                          child: Text("Cancel"), // Cancel button
+                        ),
+                        TextButton(
+                          onPressed: () async {
+                            const pdfUrl =
+                                'https://www.google.com'; // Example link to test
+                            final Uri url = Uri.parse(pdfUrl);
+
+                            // Debugging to confirm the button press
+                            print('View Study button pressed');
+
+                            // Try to launch the URL
+                            try {
+                              if (await canLaunchUrl(url)) {
+                                print('Launching URL: $pdfUrl');
+                                await launchUrl(
+                                  url,
+                                  mode: LaunchMode
+                                      .externalApplication, // Open in a browser or external app
+                                );
+                              } else {
+                                print('Could not launch URL: $pdfUrl');
+                              }
+                            } catch (e) {
+                              print('Error occurred while launching URL: $e');
+                            }
+                          },
+                          child: Text("View Study"), // Redirect button
+                        ),
+                      ],
+                    );
+                  },
+                );
               },
               backgroundColor: AppColors.backgroundColor,
               icon: Icon(Icons.play_circle_outlined,

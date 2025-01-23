@@ -1,4 +1,4 @@
-String DataJson = '''
+String dataJson = '''
   {
     "firstname": "Shiva",
     "lastname": "kumar",
@@ -8,7 +8,7 @@ String DataJson = '''
   }
   ''';
 
-String DataJsonList = '''
+String dataJsonList = '''
   [
     { "firstname": "akash", "lastname":"dev","username":"akashgraspear","password":"password251","email": "akashdev@gmail.com"},
     {"firstname": "arvin", "lastname":"raj","username":"arvingraspear","password":"password254","email": "arvinraj@gmail.com"},
