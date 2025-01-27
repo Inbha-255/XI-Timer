@@ -2,7 +2,6 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:flutter/cupertino.dart';
 import 'package:shared_preferences/shared_preferences.dart';
-
 import '../../../Constants/colors.dart';
 import '../../Data/Modals/add_athlete_json.dart';
 
@@ -13,25 +12,17 @@ class Athlete extends Root {
   static Athlete fromJson(Map<String, dynamic> json) {
     return Athlete(name: json['name'], number: json['number']);
   }
-
-  @override
-  // ignore: unnecessary_overrides
-  Map<String, dynamic> toJson() {
-    return super.toJson();
-  }
 }
 
-class SelectAthletePage extends StatefulWidget {
-  const SelectAthletePage({super.key});
+class AddAthletePage extends StatefulWidget {
+  const AddAthletePage({super.key});
 
   @override
-  State<SelectAthletePage> createState() => _SelectAthletePageState();
+  State<AddAthletePage> createState() => _AddAthletePageState();
 }
 
-class _SelectAthletePageState extends State<SelectAthletePage> {
-  final _formKey = GlobalKey<FormState>();
+class _AddAthletePageState extends State<AddAthletePage> {
   final TextEditingController _nameController = TextEditingController();
-  final FocusNode _nameFocusNode = FocusNode(); // Manage TextField focus
   int? _selectedNumber;
   late List<int> _numbers;
   final List<Athlete> _athletes = [];
@@ -41,6 +32,12 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
     super.initState();
     _loadAthletesFromPreferences();
     _generateNumbers();
+  }
+
+  @override
+  void dispose() {
+    _nameController.dispose();
+    super.dispose();
   }
 
   void _generateNumbers() {
@@ -94,6 +91,8 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
   }
 
   Future<void> _showCreateAthleteDialog({int? index, Athlete? athlete}) async {
+    final GlobalKey<FormState> keyForm = GlobalKey<FormState>();
+
     if (_numbers.isEmpty && athlete == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No numbers available!')),
@@ -117,72 +116,68 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
         return AlertDialog(
           title: Text(athlete == null ? 'Create New Athlete' : 'Edit Athlete'),
           content: SingleChildScrollView(
-            child: GestureDetector(
-              onTap: () => FocusScope.of(context).unfocus(),
-              child: Form(
-                key: _formKey,
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text("Name"),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: TextFormField(
-                            controller: _nameController,
-                            focusNode: _nameFocusNode,
-                            decoration: const InputDecoration(
-                              contentPadding:
-                                  EdgeInsets.symmetric(vertical: 10),
+            child: Form(
+              key: keyForm,
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text("Name"),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: TextFormField(
+                          controller: _nameController,
+                          decoration: const InputDecoration(
+                            contentPadding:
+                                EdgeInsets.symmetric(vertical: 10),
+                          ),
+                          validator: (value) => value == null || value.isEmpty
+                              ? 'Name is required'
+                              : null,
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      const Text('Number:'),
+                      const SizedBox(width: 16),
+                      Expanded(
+                        child: SizedBox(
+                          height: 120,
+                          child: CupertinoPicker(
+                            itemExtent: 40.0,
+                            scrollController: FixedExtentScrollController(
+                              initialItem: athlete != null
+                                  ? _numbers.indexOf(athlete.number!)
+                                  : 0,
                             ),
-                            validator: (value) => value == null || value.isEmpty
-                                ? 'Name is required'
-                                : null,
+                            onSelectedItemChanged: (int index) {
+                              setState(() {
+                                _selectedNumber = _numbers[index];
+                              });
+                            },
+                            children: _numbers
+                                .map((number) =>
+                                    Center(child: Text(number.toString())))
+                                .toList(),
                           ),
                         ),
-                      ],
-                    ),
-                    const SizedBox(height: 20),
-                    Row(
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        const Text('Number:'),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: SizedBox(
-                            height: 120,
-                            child: CupertinoPicker(
-                              itemExtent: 40.0,
-                              scrollController: FixedExtentScrollController(
-                                initialItem: athlete != null
-                                    ? _numbers.indexOf(athlete.number!)
-                                    : 0,
-                              ),
-                              onSelectedItemChanged: (int index) {
-                                setState(() {
-                                  _selectedNumber = _numbers[index];
-                                });
-                              },
-                              children: _numbers
-                                  .map((number) =>
-                                      Center(child: Text(number.toString())))
-                                  .toList(),
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
-                ),
+                      ),
+                    ],
+                  ),
+                ],
               ),
             ),
           ),
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate() &&
+                if (keyForm.currentState!.validate() &&
                     _selectedNumber != null) {
                   final newAthlete = Athlete(
                     name: _nameController.text,
@@ -233,6 +228,7 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
           IconButton(
             onPressed: () => _showCreateAthleteDialog(),
             icon: const Icon(Icons.person_add, color: Colors.white),
+            tooltip: "Add Athlete",
           ),
         ],
       ),
@@ -245,22 +241,28 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
                 return Padding(
                   padding: const EdgeInsets.only(top: 6),
                   child: ListTile(
+                    onTap: () {
+                      Navigator.pop(context, athlete);
+                    },
                     contentPadding: const EdgeInsets.all(5),
                     tileColor: Colors.white,
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${athlete.number}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
+                    leading: Hero(
+                      tag: 'athleteHero-${athlete.number}',
+                      child: Container(
+                        width: 50,
+                        height: 50,
+                        decoration: const BoxDecoration(
+                          color: AppColors.primaryColor,
+                          shape: BoxShape.circle,
+                        ),
+                        child: Center(
+                          child: Text(
+                            '${athlete.number}',
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontWeight: FontWeight.bold,
+                              fontSize: 16,
+                            ),
                           ),
                         ),
                       ),

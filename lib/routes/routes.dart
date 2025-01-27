@@ -5,11 +5,11 @@ import 'package:flutter_application_1/Features/views/loginpage/signup.dart';
 import 'package:flutter_application_1/Features/views/screen3.dart';
 import 'package:flutter_application_1/Features/views/settings/about.dart';
 import 'package:flutter_application_1/Features/views/settings/faq.dart';
-
 import 'package:get/get.dart';
-
 import '../Features/views/athlete.dart';
 import '../Features/views/basicmode.dart';
+import '../Features/views/detection_page/camera_service.dart';
+import '../Features/views/detection_page/stopwatch_screen.dart';
 
 List<GetPage> approutes() {
   return [
@@ -22,5 +22,13 @@ List<GetPage> approutes() {
     GetPage(name: '/history', page: () => Historypage()),
     GetPage(name: '/faq', page: () => Faq()),
     GetPage(name: '/aboutpage', page: () => Aboutpage()),
+    GetPage(
+      name: '/stopwatch',
+      page: () => StopwatchScreen(
+        cameras: CameraService().cameras, // Access cameras from CameraService
+      ),
+    ),
+
+
   ];
 }

@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart'; // Import Get package for navigation
+import 'package:get/get.dart';
 import '../../constants/colors.dart';
 import 'add_athlete.dart';
 
@@ -11,7 +11,26 @@ class BasicModeScreen extends StatefulWidget {
 }
 
 class _BasicModeScreenState extends State<BasicModeScreen> {
-  String? selectedAthlete;
+  Athlete? selectedAthlete;
+
+  @override
+  void initState() {
+    super.initState();
+    // Retrieve the passed athlete from the previous screen, if any
+    selectedAthlete = Get.arguments as Athlete?;
+  }
+
+  void _navigateToSelectAthlete() async {
+    // Navigate to SelectAthletePage using GetX and await the selected athlete
+    final athlete = await Get.to(() => const AddAthletePage());
+
+    if (athlete != null && athlete is Athlete) {
+      // Update the selected athlete
+      setState(() {
+        selectedAthlete = athlete;
+      });
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -25,7 +44,7 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
         ),
         leading: IconButton(
           onPressed: () {
-            // Navigate back to Homepage
+            // Navigate back to Homepage using GetX
             Get.offNamed('/home');
           },
           icon: const Icon(
@@ -33,14 +52,44 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
             color: Colors.white,
           ),
         ),
+        actions: [
+          IconButton(
+            color: Colors.white,
+            onPressed: () {
+              // Show help dialog
+              showDialog(
+                context: context,
+                builder: (BuildContext context) {
+                  return AlertDialog(
+                    title: const Text('Basic Mode'),
+                    content: const Text(
+                        "In Basic Mode, the session begins when the 'Manual Start' button is clicked."
+                        "It starts recording time and ends automatically upon detecting the athlete's motion."
+                        "\nNote: The camera must remain fixed and steady without any movement"),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text("OK"),
+                      ),
+                    ],
+                  );
+                },
+              );
+            },
+            icon: const Icon(Icons.help),
+          ),
+        ],
       ),
-      body: Column(
+      body: ListView(
         children: [
           Padding(
             padding: const EdgeInsets.all(8.0),
             child: Container(
               color: Colors.white,
               child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   Row(
                     children: [
@@ -53,6 +102,7 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                       ),
                       IconButton(
                         onPressed: () {
+                          // Show help dialog
                           showDialog(
                             context: context,
                             builder: (BuildContext context) {
@@ -66,7 +116,7 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                                 actions: [
                                   TextButton(
                                     onPressed: () {
-                                      Navigator.of(context).pop();
+                                      Get.back();
                                     },
                                     child: const Text("OK"),
                                   ),
@@ -79,55 +129,58 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                       ),
                     ],
                   ),
-                  Row(
-                    children: [
-                      Padding(
-                        padding: const EdgeInsets.only(
-                          top: 20,
-                          bottom: 10,
-                          left: 10,
-                        ),
-                        child: ElevatedButton(
-                          onPressed: () {
-                            Navigator.push(
-                              context,
-                              MaterialPageRoute(
-                                builder: (context) => const SelectAthletePage(),
-                              ),
-                            ).then((selected) {
-                              if (selected != null) {
-                                setState(() {
-                                  selectedAthlete = selected as String;
-                                });
-                              }
-                            });
-                          },
-                          style: ElevatedButton.styleFrom(
-                            shape: const RoundedRectangleBorder(
-                              borderRadius: BorderRadius.zero,
-                            ),
+
+                  // Display selected athlete's details if available
+                  if (selectedAthlete != null)
+                    Container(
+                      color: Colors.white,
+                      padding: const EdgeInsets.all(
+                          8.0), // Add some padding around the container
+                      child: Row(
+                        children: [
+                          CircleAvatar(
+                            radius: 15, // Adjust the size of the CircleAvatar
                             backgroundColor: AppColors.primaryColor,
-                          ),
-                          child: Text(
-                            selectedAthlete != null
-                                ? 'Change Athlete'
-                                : 'Add Athlete',
-                            style: const TextStyle(color: Colors.white),
-                          ),
-                        ),
-                      ),
-                      if (selectedAthlete != null)
-                        Padding(
-                          padding: const EdgeInsets.only(left: 16.0),
-                          child: Text(
-                            'Selected: $selectedAthlete',
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 16,
+                            child: Text(
+                              selectedAthlete!.number.toString(),
+                              style: const TextStyle(
+                                fontSize: 10,
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                              ),
                             ),
                           ),
+                          const SizedBox(
+                              width:
+                                  8), // Adjust this to control spacing between avatar and text
+                          Text(
+                            selectedAthlete!.name ?? 'Unknown Athlete',
+                            style: const TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.bold,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+
+                  Padding(
+                    padding: const EdgeInsets.all(10.0),
+                    child: ElevatedButton(
+                      onPressed: _navigateToSelectAthlete,
+                      style: ElevatedButton.styleFrom(
+                        shape: const RoundedRectangleBorder(
+                          borderRadius: BorderRadius.zero,
                         ),
-                    ],
+                        backgroundColor: AppColors.primaryColor,
+                      ),
+                      child: Text(
+                        selectedAthlete != null
+                            ? 'Change Athlete'
+                            : 'Add Athlete',
+                        style: const TextStyle(color: Colors.white),
+                      ),
+                    ),
                   ),
                 ],
               ),
@@ -146,6 +199,19 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
               child: ElevatedButton(
                 onPressed: () {
                   // Handle "Start Session" button action
+                  if (selectedAthlete != null) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(
+                          content: Text(
+                              'Session started for ${selectedAthlete!.name ?? 'Unknown Athlete'}')),
+                    );
+                    Get.offNamed('/stopwatch');
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Please select an athlete first!')),
+                    );
+                  }
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: AppColors.primaryColor,

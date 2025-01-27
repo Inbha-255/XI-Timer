@@ -109,7 +109,6 @@ class SignUpPageState extends State<SignUpPage> {
       );
 
       // Print user details to verify
-      
 
       // Simulate successful registration
       Get.snackbar(

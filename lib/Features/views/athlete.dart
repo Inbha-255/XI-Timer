@@ -1,8 +1,8 @@
 import 'dart:convert';
-
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/colors.dart';
+import 'package:get/get.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../../Data/Modals/add_athlete_json.dart';
 
@@ -14,11 +14,6 @@ class Athlete extends Root {
     return Athlete(name: json['name'], number: json['number']);
   }
 
-  @override
-  // ignore: unnecessary_overrides
-  Map<String, dynamic> toJson() {
-    return super.toJson();
-  }
 }
 
 class SelectAthletePage extends StatefulWidget {
@@ -29,9 +24,8 @@ class SelectAthletePage extends StatefulWidget {
 }
 
 class _SelectAthletePageState extends State<SelectAthletePage> {
-  final _formKey = GlobalKey<FormState>();
   final TextEditingController _nameController = TextEditingController();
-  final FocusNode _nameFocusNode = FocusNode(); // Manage TextField focus
+  final FocusNode _nameFocusNode = FocusNode();
   int? _selectedNumber;
   late List<int> _numbers;
   final List<Athlete> _athletes = [];
@@ -94,6 +88,9 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
   }
 
   Future<void> _showCreateAthleteDialog({int? index, Athlete? athlete}) async {
+    // Create a unique GlobalKey for each dialog
+    final GlobalKey<FormState> dialogFormKey = GlobalKey<FormState>();
+
     if (_numbers.isEmpty && athlete == null) {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('No numbers available!')),
@@ -120,7 +117,7 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
             child: GestureDetector(
               onTap: () => FocusScope.of(context).unfocus(),
               child: Form(
-                key: _formKey,
+                key: dialogFormKey,
                 child: Column(
                   mainAxisSize: MainAxisSize.min,
                   children: [
@@ -182,7 +179,7 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
           actions: [
             ElevatedButton(
               onPressed: () {
-                if (_formKey.currentState!.validate() &&
+                if (dialogFormKey.currentState!.validate() &&
                     _selectedNumber != null) {
                   final newAthlete = Athlete(
                     name: _nameController.text,
@@ -198,23 +195,16 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text(
-                "Save",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Save"),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: ElevatedButton.styleFrom(
-                backgroundColor: AppColors.primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text(
-                "Cancel",
-                style: TextStyle(color: Colors.white),
-              ),
+              child: const Text("Cancel"),
             ),
           ],
         );
@@ -229,7 +219,7 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
       appBar: AppBar(
         backgroundColor: AppColors.primaryColor,
         leading: IconButton(
-          onPressed: () => Navigator.pop(context),
+          onPressed: () => Get.back(),
           icon: const Icon(Icons.arrow_back, color: Colors.white),
         ),
         title: const Text(
@@ -243,61 +233,58 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
           ),
         ],
       ),
-      body: _athletes.isEmpty
-          ? const Center(child: Text('No athletes yet. Add one!'))
-          : ListView.builder(
-              itemCount: _athletes.length,
-              itemBuilder: (context, index) {
-                final athlete = _athletes[index];
-                return Padding(
-                  padding: const EdgeInsets.only(top: 6),
-                  child: ListTile(
-                    contentPadding: const EdgeInsets.all(5),
-                    tileColor: Colors.white,
-                    leading: Container(
-                      width: 40,
-                      height: 40,
-                      decoration: const BoxDecoration(
-                        color: AppColors.primaryColor,
-                        shape: BoxShape.circle,
-                      ),
-                      child: Center(
-                        child: Text(
-                          '${athlete.number}',
-                          style: const TextStyle(
-                            color: Colors.white,
-                            fontWeight: FontWeight.bold,
-                            fontSize: 16,
-                          ),
-                        ),
-                      ),
-                    ),
-                    title: Text(
-                      athlete.name!,
-                      style: const TextStyle(fontSize: 16),
-                    ),
-                    trailing: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        IconButton(
-                          icon: const Icon(Icons.edit,
-                              color: AppColors.primaryColor),
-                          onPressed: () => _showCreateAthleteDialog(
-                            index: index,
-                            athlete: athlete,
-                          ),
-                        ),
-                        IconButton(
-                          icon: const Icon(Icons.delete,
-                              color: AppColors.primaryColor),
-                          onPressed: () => _deleteAthlete(index),
-                        ),
-                      ],
+      body: ListView.builder(
+        itemCount: _athletes.length,
+        itemBuilder: (context, index) {
+          final athlete = _athletes[index];
+          return Padding(
+            padding: const EdgeInsets.only(top: 6),
+            child: ListTile(
+              contentPadding: const EdgeInsets.all(5),
+              tileColor: Colors.white,
+              leading: Container(
+                width: 40,
+                height: 40,
+                decoration: const BoxDecoration(
+                  color: AppColors.primaryColor,
+                  shape: BoxShape.circle,
+                ),
+                child: Center(
+                  child: Text(
+                    '${athlete.number}',
+                    style: const TextStyle(
+                      color: Colors.white,
+                      fontWeight: FontWeight.bold,
+                      fontSize: 16,
                     ),
                   ),
-                );
-              },
+                ),
+              ),
+              title: Text(
+                athlete.name!,
+                style: const TextStyle(fontSize: 16),
+              ),
+              trailing: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  IconButton(
+                    icon: const Icon(Icons.edit, color: AppColors.primaryColor),
+                    onPressed: () => _showCreateAthleteDialog(
+                      index: index,
+                      athlete: athlete,
+                    ),
+                  ),
+                  IconButton(
+                    icon:
+                        const Icon(Icons.delete, color: AppColors.primaryColor),
+                    onPressed: () => _deleteAthlete(index),
+                  ),
+                ],
+              ),
             ),
+          );
+        },
+      ),
     );
   }
 }

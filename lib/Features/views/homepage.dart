@@ -163,7 +163,7 @@ class _HomepageState extends State<Homepage> {
                         TextButton(
                           onPressed: () async {
                             const pdfUrl =
-                                'https://www.google.com'; // Example link to test
+                                'https://pdflink.to/0f32ae23/'; // Example link to test
                             final Uri url = Uri.parse(pdfUrl);
 
                             // Debugging to confirm the button press
