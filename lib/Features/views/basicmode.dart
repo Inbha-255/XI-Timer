@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:get/get.dart';
+import 'package:get/get.dart'; // Import Get package for navigation
 import '../../constants/colors.dart';
 import 'add_athlete.dart';
 
@@ -63,9 +63,9 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                   return AlertDialog(
                     title: const Text('Basic Mode'),
                     content: const Text(
-                        "In Basic Mode, the session begins when the 'Manual Start' button is clicked."
-                        "It starts recording time and ends automatically upon detecting the athlete's motion."
-                        "\nNote: The camera must remain fixed and steady without any movement"),
+                        "In Basic Mode, the session begins when the 'Manual Start' button is clicked. "
+                        "It starts recording time and ends automatically upon detecting the athlete's motion. "
+                        "\nNote: The camera must remain fixed and steady without any movement."),
                     actions: [
                       TextButton(
                         onPressed: () {
@@ -134,12 +134,11 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                   if (selectedAthlete != null)
                     Container(
                       color: Colors.white,
-                      padding: const EdgeInsets.all(
-                          8.0), // Add some padding around the container
+                      padding: const EdgeInsets.all(8.0),
                       child: Row(
                         children: [
                           CircleAvatar(
-                            radius: 15, // Adjust the size of the CircleAvatar
+                            radius: 15,
                             backgroundColor: AppColors.primaryColor,
                             child: Text(
                               selectedAthlete!.number.toString(),
@@ -150,9 +149,7 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                               ),
                             ),
                           ),
-                          const SizedBox(
-                              width:
-                                  8), // Adjust this to control spacing between avatar and text
+                          const SizedBox(width: 8),
                           Text(
                             selectedAthlete!.name ?? 'Unknown Athlete',
                             style: const TextStyle(

@@ -57,11 +57,13 @@ class LoginPageState extends State<LoginPage> {
       String password = passwordController.text.trim();
 
       // Parse JSON data
+
       final Map<String, dynamic> data = jsonDecode(dataJson);
       final List<dynamic> dataList = jsonDecode(dataJsonList);
 
       // Combine single object and list for authentication
       final List<Map<String, dynamic>> allUsers = [
+        
         data,
         ...dataList.map((e) => e as Map<String, dynamic>)
       ];
