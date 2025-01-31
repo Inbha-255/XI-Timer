@@ -100,96 +100,99 @@ class LoginPageState extends State<LoginPage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
+        automaticallyImplyLeading: false,
         title: Text(
           "Login",
           style: TextStyle(color: Colors.white),
         ),
-        backgroundColor: AppColors.primaryColor,
+  backgroundColor: AppColors.primaryColor,
       ),
-      body: Padding(
-        padding: const EdgeInsets.all(20.0),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Text(
-                "Login Here",
-                style: GoogleFonts.roboto(
-                  color: AppColors.primaryColor,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 30,
-                ),
-              ),
-              SizedBox(height: 10),
-              TextField(
-                controller: usernameController,
-                decoration: InputDecoration(
-                  labelText: "Username",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
+      body: Center(
+        child: Padding(
+          padding: const EdgeInsets.all(20.0),
+          child: SingleChildScrollView(
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  "Login Here",
+                  style: GoogleFonts.roboto(
+                    color: AppColors.primaryColor,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 30,
                   ),
-                  prefixIcon: Icon(Icons.person, color: AppColors.primaryColor),
                 ),
-              ),
-              SizedBox(height: 20),
-              TextField(
-                controller: passwordController,
-                obscureText: _obscureText,
-                decoration: InputDecoration(
-                  labelText: "Password",
-                  border: OutlineInputBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  prefixIcon: Icon(Icons.lock, color: AppColors.primaryColor),
-                  suffixIcon: IconButton(
-                    icon: Icon(
-                      _obscureText ? Icons.visibility_off : Icons.visibility,
-                      color: AppColors.primaryColor,
+                SizedBox(height: 10),
+                TextField(
+                  controller: usernameController,
+                  decoration: InputDecoration(
+                    labelText: "Username",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
                     ),
-                    onPressed: () {
-                      setState(() {
-                        _obscureText = !_obscureText;
-                      });
-                    },
+                    prefixIcon: Icon(Icons.person, color: AppColors.primaryColor),
                   ),
                 ),
-              ),
-              SizedBox(height: 20),
-              ElevatedButton(
-                onPressed: _authenticateUser,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
-                  padding: EdgeInsets.symmetric(vertical: 15, horizontal: 80),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
+                SizedBox(height: 20),
+                TextField(
+                  controller: passwordController,
+                  obscureText: _obscureText,
+                  decoration: InputDecoration(
+                    labelText: "Password",
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                    prefixIcon: Icon(Icons.lock, color: AppColors.primaryColor),
+                    suffixIcon: IconButton(
+                      icon: Icon(
+                        _obscureText ? Icons.visibility_off : Icons.visibility,
+                        color: AppColors.primaryColor,
+                      ),
+                      onPressed: () {
+                        setState(() {
+                          _obscureText = !_obscureText;
+                        });
+                      },
+                    ),
                   ),
                 ),
-                child: Text(
-                  "LOGIN",
-                  style:
-                      TextStyle(color: AppColors.backgroundColor, fontSize: 18),
+                SizedBox(height: 20),
+                ElevatedButton(
+                  onPressed: _authenticateUser,
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: AppColors.primaryColor,
+                    padding: EdgeInsets.symmetric(vertical: 15, horizontal: 80),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(10),
+                    ),
+                  ),
+                  child: Text(
+                    "LOGIN",
+                    style:
+                        TextStyle(color: AppColors.backgroundColor, fontSize: 18),
+                  ),
                 ),
-              ),
-              SizedBox(height: 10),
-              TextButton(
-                onPressed: () {
-                  Get.toNamed('/forget'); // Navigate to Forgot Password Page
-                },
-                child: Text(
-                  "Forgot Password?",
-                  style: TextStyle(color: AppColors.primaryColor, fontSize: 14),
+                SizedBox(height: 10),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed('/forget'); // Navigate to Forgot Password Page
+                  },
+                  child: Text(
+                    "Forgot Password?",
+                    style: TextStyle(color: AppColors.primaryColor, fontSize: 14),
+                  ),
                 ),
-              ),
-              TextButton(
-                onPressed: () {
-                  Get.toNamed('/signup'); // Navigate to Sign-Up Page
-                },
-                child: Text(
-                  "Don't have an account? Sign Up",
-                  style: TextStyle(color: AppColors.primaryColor, fontSize: 14),
+                TextButton(
+                  onPressed: () {
+                    Get.toNamed('/signup'); // Navigate to Sign-Up Page
+                  },
+                  child: Text(
+                    "Don't have an account? Sign Up",
+                    style: TextStyle(color: AppColors.primaryColor, fontSize: 14),
+                  ),
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
         ),
       ),

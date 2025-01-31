@@ -1,4 +1,4 @@
-package com.example.xi_timer
+package com.graspear.xitimer
 
 import io.flutter.embedding.android.FlutterActivity
 

@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "549813126875",
+    "project_id": "xi-timer-e1014",
+    "storage_bucket": "xi-timer-e1014.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:549813126875:android:3a674c196136eb628c6efe",
+        "android_client_info": {
+          "package_name": "com.graspear.xitimer"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCj8tKidgEyJj-CveUCEjTPw6WA5PtOpFo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

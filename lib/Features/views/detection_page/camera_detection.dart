@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_application_1/Features/views/detection_page/stopwatch_screen.dart';
+import 'package:flutter_application_1/Features/views/detection_page/stopwatch_controller.dart';
 import 'camera_service.dart';
 
 class StopwatchScreenApp extends StatelessWidget {

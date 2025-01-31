@@ -13,7 +13,6 @@ class Athlete extends Root {
   static Athlete fromJson(Map<String, dynamic> json) {
     return Athlete(name: json['name'], number: json['number']);
   }
-
 }
 
 class SelectAthletePage extends StatefulWidget {
@@ -29,6 +28,7 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
   int? _selectedNumber;
   late List<int> _numbers;
   final List<Athlete> _athletes = [];
+  int _currentIndex = 0;
 
   @override
   void initState() {
@@ -65,6 +65,23 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
       _updateAvailableNumbers();
       _saveAthletesToPreferences();
     });
+  }
+
+  void _navigateToPage(int index) {
+    setState(() {
+      _currentIndex = index;
+    });
+    switch (index) {
+      case 0:
+        Get.toNamed("/home");
+        break;
+      case 1:
+        Get.toNamed("/Athlete");
+        break;
+      case 2:
+        Get.toNamed("/history");
+        break;
+    }
   }
 
   Future<void> _saveAthletesToPreferences() async {
@@ -195,16 +212,18 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text("Save"),
+              child: const Text("Save", style: TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text("Cancel"),
+              child:
+                  const Text("Cancel", style: TextStyle(color: Colors.white)),
             ),
           ],
         );
@@ -284,6 +303,34 @@ class _SelectAthletePageState extends State<SelectAthletePage> {
             ),
           );
         },
+      ),
+      bottomNavigationBar: BottomNavigationBar(
+        backgroundColor: AppColors.primaryColor,
+        currentIndex: _currentIndex,
+        selectedItemColor: Colors.white, // Set selected icon and label to white
+        unselectedItemColor:
+            const Color(0xFF676767), // Dull color for unselected items
+        selectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.bold, // Bold text for selected label
+        ),
+        unselectedLabelStyle: const TextStyle(
+          fontWeight: FontWeight.normal, // Normal text for unselected labels
+        ),
+        onTap: _navigateToPage,
+        items: const [
+          BottomNavigationBarItem(
+            icon: Icon(Icons.timer_outlined),
+            label: 'Timer',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.groups),
+            label: 'Athletes',
+          ),
+          BottomNavigationBarItem(
+            icon: Icon(Icons.leaderboard),
+            label: 'History',
+          ),
+        ],
       ),
     );
   }

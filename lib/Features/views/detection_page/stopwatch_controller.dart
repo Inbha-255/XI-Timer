@@ -1,11 +1,10 @@
 import 'dart:io';
-
 import 'package:camera/camera.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:get/get.dart';
 import 'package:google_mlkit_pose_detection/google_mlkit_pose_detection.dart';
-import 'package:path_provider/path_provider.dart';
+import 'dtetected_page.dart';
 
 class StopwatchScreen extends StatelessWidget {
   final List<CameraDescription> cameras;
@@ -15,24 +14,48 @@ class StopwatchScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final StopwatchController controller =
-        Get.put(StopwatchController(cameras: cameras));
+        Get.put(StopwatchController(cameras: cameras));//This creates an instance of StopwatchController and passes the camera list (cameras) as a parameter.
 
-    return SafeArea(
+    return SafeArea(//This code is responsible for displaying the camera preview correctly on the screen while maintaining the aspect ratio.
       child: Scaffold(
         body: Stack(
           children: [
-            // Full-Screen Camera Preview
-            GetBuilder<StopwatchController>(
+            // Full-Screen Camera Preview with Correct Aspect Ratio
+            GetBuilder<StopwatchController>(//GetBuilder<StopwatchController> is used to rebuild only the necessary parts of the UI when the state in StopwatchController changes.
               builder: (controller) {
-                if (controller.cameraController.value.isInitialized) {
-                  final size = MediaQuery.of(context).size;
-                  final scale = size.aspectRatio *
-                      controller.cameraController.value.aspectRatio;
+                if (controller.cameraController.value.isInitialized) {//Checks if the camera is ready to use.If not initialized, it will show a loading indicator.
+                  final previewSize =
+                      controller.cameraController.value.previewSize!;//Retrieves the size of the camera preview.previewSize.width and previewSize.height tell us the camera's resolution.
+                  final screenSize = MediaQuery.of(context).size;//Retrieves the screen width and height of the device.
 
-                  return Transform.scale(
-                    scale: scale < 1 ? 1 / scale : scale,
-                    child: Center(
-                      child: CameraPreview(controller.cameraController),
+                  // Calculate the aspect ratio and scale
+                  final previewAspectRatio =
+                      previewSize.height / previewSize.width;
+                  final screenAspectRatio =
+                      screenSize.width / screenSize.height;
+
+                  return Transform.rotate(
+                    angle: Platform.isAndroid
+                        ? 3.1416 / 2
+                        : 0, // Maintain Android rotation
+                    child: AspectRatio(
+                      aspectRatio: previewAspectRatio,
+                      child: OverflowBox(
+                        maxWidth: screenAspectRatio > previewAspectRatio
+                            ? screenSize.width
+                            : screenSize.height * previewAspectRatio,
+                        maxHeight: screenAspectRatio > previewAspectRatio
+                            ? screenSize.width / previewAspectRatio
+                            : screenSize.height,
+                        child: FittedBox(
+                          fit: BoxFit.cover,
+                          child: SizedBox(
+                            width: previewSize.width,
+                            height: previewSize.height,
+                            child: CameraPreview(controller.cameraController),
+                          ),
+                        ),
+                      ),
                     ),
                   );
                 } else {
@@ -42,7 +65,7 @@ class StopwatchScreen extends StatelessWidget {
             ),
             // Overlay for Stopwatch and Buttons
             Positioned(
-              top: 16,
+              bottom: 16,
               left: 16,
               right: 16,
               child: Column(
@@ -88,7 +111,7 @@ class StopwatchController extends GetxController {
   late PoseDetector poseDetector;
   final stopwatch = Stopwatch();
   final isRecording = false.obs;
-  final elapsedTime = '00:00:00'.obs;
+  final elapsedTime = '00:00'.obs;
 
   StopwatchController({required this.cameras});
 
@@ -101,13 +124,13 @@ class StopwatchController extends GetxController {
 
   Future<void> initializeCamera() async {
     cameraController = CameraController(
-      cameras.first, // Use the first camera from the passed list
-      ResolutionPreset.high,
+      cameras.first,
+      ResolutionPreset.high, // Use high resolution for better preview quality
       enableAudio: false,
     );
 
     await cameraController.initialize();
-    cameraController.lockCaptureOrientation(DeviceOrientation.portraitUp);
+    await cameraController.lockCaptureOrientation(DeviceOrientation.portraitUp);
     update();
   }
 
@@ -129,11 +152,12 @@ class StopwatchController extends GetxController {
 
   void _updateElapsedTime() {
     if (isRecording.value) {
-      Future.delayed(const Duration(seconds: 1), () {
+      Future.delayed(const Duration(milliseconds: 50), () {
         if (isRecording.value) {
           final elapsed = stopwatch.elapsed;
           elapsedTime.value =
-              '${elapsed.inHours.toString().padLeft(2, '0')}:${(elapsed.inMinutes % 60).toString().padLeft(2, '0')}:${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}';
+              '${(elapsed.inSeconds % 60).toString().padLeft(2, '0')}:'
+              '${((elapsed.inMilliseconds % 1000) ~/ 10).toString().padLeft(2, '0')}';
           _updateElapsedTime();
         }
       });
@@ -143,32 +167,22 @@ class StopwatchController extends GetxController {
   Future<void> _detectMotion() async {
     while (isRecording.value && cameraController.value.isInitialized) {
       try {
-        final image = await cameraController.takePicture();
-        final inputImage = InputImage.fromFilePath(image.path);
-        final poses = await poseDetector.processImage(inputImage);
-
+        final image = await cameraController.takePicture();//ca[tures image]
+        final inputImage = InputImage.fromFilePath(image.path);//takes to ml kit the captured img
+        final poses = await poseDetector.processImage(inputImage);//ml kit analysing for human pose
         if (poses.isNotEmpty) {
-          _saveImage(image);
+          final elapsed = elapsedTime.value; // Capture the elapsed time
           stopRecording();
+          Get.to(() => DetectionResultScreen(
+                imagePath: image.path,
+                elapsedTime: elapsed,
+              ));
           debugPrint('Motion detected! Photo saved.');
           return;
         }
       } catch (e) {
         debugPrint('Error during motion detection: $e');
       }
-    }
-  }
-
-  Future<void> _saveImage(XFile image) async {
-    try {
-      final directory = await getApplicationDocumentsDirectory();
-      final path =
-          '${directory.path}/${DateTime.now().millisecondsSinceEpoch}.jpg';
-      final file = File(path);
-      await file.writeAsBytes(await image.readAsBytes());
-      debugPrint('Image saved at: $path');
-    } catch (e) {
-      debugPrint('Error saving image: $e');
     }
   }
 

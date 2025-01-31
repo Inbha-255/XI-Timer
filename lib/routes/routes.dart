@@ -1,3 +1,4 @@
+import 'package:flutter_application_1/Features/views/detection_page/stopwatch_controller.dart';
 import 'package:flutter_application_1/Features/views/homepage.dart';
 import 'package:flutter_application_1/Features/views/loginpage/forget.dart';
 import 'package:flutter_application_1/Features/views/loginpage/login.dart';
@@ -9,7 +10,6 @@ import 'package:get/get.dart';
 import '../Features/views/athlete.dart';
 import '../Features/views/basicmode.dart';
 import '../Features/views/detection_page/camera_service.dart';
-import '../Features/views/detection_page/stopwatch_screen.dart';
 
 List<GetPage> approutes() {
   return [

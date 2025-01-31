@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart'; // Import Get package for navigation
 import '../../constants/colors.dart';
 import 'add_athlete.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class BasicModeScreen extends StatefulWidget {
   const BasicModeScreen({super.key});
@@ -194,16 +195,27 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
             Padding(
               padding: const EdgeInsets.all(8.0),
               child: ElevatedButton(
-                onPressed: () {
-                  // Handle "Start Session" button action
+                onPressed: () async {
                   if (selectedAthlete != null) {
+                    // Store the selected athlete's name in Shared Preferences
+                    final SharedPreferences prefs =
+                        await SharedPreferences.getInstance();
+                    await prefs.setString('selectedAthlete',
+                        selectedAthlete!.name ?? 'Unknown Athlete');
+
+                    // Show confirmation that session has started
                     ScaffoldMessenger.of(context).showSnackBar(
                       SnackBar(
-                          content: Text(
-                              'Session started for ${selectedAthlete!.name ?? 'Unknown Athlete'}')),
+                        content: Text(
+                          'Session started for ${selectedAthlete!.name ?? 'Unknown Athlete'}',
+                        ),
+                      ),
                     );
+
+                    // ✅ Navigate to the stopwatch screen
                     Get.offNamed('/stopwatch');
                   } else {
+                    // Show warning if no athlete is selected
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                           content: Text('Please select an athlete first!')),
@@ -211,7 +223,8 @@ class _BasicModeScreenState extends State<BasicModeScreen> {
                   }
                 },
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColors.primaryColor,
+                  backgroundColor: const Color.fromARGB(
+                      255, 47, 53, 68), // ✅ Fixed your color formatting
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(0),
                   ),

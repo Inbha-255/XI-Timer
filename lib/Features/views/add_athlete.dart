@@ -193,16 +193,17 @@ class _AddAthletePageState extends State<AddAthletePage> {
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text("Save"),
+              child: const Text("Save", style: TextStyle(color: Colors.white)),
             ),
             ElevatedButton(
               onPressed: () => Navigator.of(dialogContext).pop(),
               style: ElevatedButton.styleFrom(
+                backgroundColor: AppColors.primaryColor,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(0),
                 ),
               ),
-              child: const Text("Cancel"),
+              child: const Text("Cancel",style: TextStyle(color: Colors.white)),
             ),
           ],
         );

@@ -1,4 +1,4 @@
-// ignore_for_file: avoid_print
+// ignore_for_file: avoid_print                                                                                                                                                                                                        / 
 import 'package:flutter/material.dart';
 import 'package:flutter_application_1/constants/colors.dart';
 import 'package:get/get.dart';
@@ -36,31 +36,31 @@ class _HomepageState extends State<Homepage> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        backgroundColor: AppColors.primaryColor,
-        title: Text(
-          "XI-Timer",
-          style: GoogleFonts.roboto(color: AppColors.backgroundColor),
-        ),
-        actions: [
-          Builder(
-            builder: (context) {
-              return IconButton(
-                icon: Icon(
-                  Icons.more_vert,
-                  color: AppColors.backgroundColor,
-                ),
-                onPressed: () {
-                  final RenderBox renderBox =
-                      context.findRenderObject() as RenderBox;
-                  final Offset iconPosition =
-                      renderBox.localToGlobal(Offset.zero);
-                  _showMoreOptionsDialog(context, iconPosition);
-                },
-              );
-            },
+  automaticallyImplyLeading: false,  // This removes the back button
+  backgroundColor: AppColors.primaryColor,
+  title: Text(
+    "XI-Timer",
+    style: GoogleFonts.roboto(color: AppColors.backgroundColor),
+  ),
+  actions: [
+    Builder(
+      builder: (context) {
+        return IconButton(
+          icon: Icon(
+            Icons.more_vert,
+            color: AppColors.backgroundColor,
           ),
-        ],
-      ),
+          onPressed: () {
+            final RenderBox renderBox = context.findRenderObject() as RenderBox;
+            final Offset iconPosition = renderBox.localToGlobal(Offset.zero);
+            _showMoreOptionsDialog(context, iconPosition);
+          },
+        );
+      },
+    ),
+  ],
+),
+
       body: Center(
         child: Container(
           width: double.infinity,
@@ -171,15 +171,18 @@ class _HomepageState extends State<Homepage> {
 
                             // Try to launch the URL
                             try {
-                              if (await canLaunchUrl(url)) {
-                                print('Launching URL: $pdfUrl');
-                                await launchUrl(
-                                  url,
-                                  mode: LaunchMode
-                                      .externalApplication, // Open in a browser or external app
-                                );
-                              } else {
+                              if (!await launchUrl(
+                                url,
+                                mode: LaunchMode
+                                    .platformDefault, // Works better on Android
+                              )) {
                                 print('Could not launch URL: $pdfUrl');
+                                // ignore: use_build_context_synchronously
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(
+                                      content: Text(
+                                          "Could not open the link. Please try again.")),
+                                );
                               }
                             } catch (e) {
                               print('Error occurred while launching URL: $e');
@@ -283,6 +286,13 @@ class _HomepageState extends State<Homepage> {
                           title: const Text('About'),
                           onTap: () {
                             Get.toNamed("/aboutpage");
+                          },
+                        ),
+                          ListTile(
+                          leading: const Icon(Icons.logout),
+                          title: const Text('Log out'),
+                          onTap: () {
+                            Get.toNamed("/login");
                           },
                         ),
                       ],
